@@ -2,7 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:for_all/main.dart';
 import 'package:for_all/providers/user_provider.dart';
+import 'package:for_all/widgets/user_image_picker.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
   const AuthScreen({super.key});
@@ -16,12 +18,13 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   var _enterdPassword = '';
   var _enterdUserName = '';
   // ignore: avoid_init_to_null
+  var _selectedImage = null;
+  // ignore: avoid_init_to_null
   var _enterdBio = null;
   var _isSignUp = false;
   var _isAuthing = false;
   RegExp regExp = RegExp(r'^[a-zA-Z0-9]+$');
   final _form = GlobalKey<FormState>();
-
 
   void _submit() async {
     final isValid = _form.currentState!.validate();
@@ -36,11 +39,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     try {
       if (_isSignUp) {
         await ref.read(authProvider.notifier).signUp(
-              email: _enterdEmail,
-              password: _enterdPassword,
-              username: _enterdUserName,
-              bio: _enterdBio,
-            );
+            email: _enterdEmail,
+            password: _enterdPassword,
+            username: _enterdUserName,
+            bio: _enterdBio,
+            userImage: _selectedImage);
       } else {
         await ref
             .read(authProvider.notifier)
@@ -67,6 +70,16 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  if (_isSignUp)
+                  
+                        UserImagePicker(
+                          onPickImage: (pickedImage) {
+                            _selectedImage = pickedImage;
+                          },
+                        ),
+                      
+                     
+                    
                   Form(
                     key: _form,
                     child: Column(
@@ -177,8 +190,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                         });
                       },
                       child: _isSignUp
-                          ? const Text('Sign up')
-                          : const Text('Sign in'),
+                          ? const Text('Sign in')
+                          : const Text('Sign up'),
                     ),
                   ],
                 ),

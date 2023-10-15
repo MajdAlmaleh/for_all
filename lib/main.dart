@@ -6,9 +6,8 @@ import 'package:for_all/providers/user_provider.dart';
 import 'package:for_all/screens/auth.dart';
 import 'firebase_options.dart';
 import 'package:for_all/screens/home.dart';
-import 'package:for_all/screens/waiting.dart';
 
-bool signIn = true;
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,7 +24,6 @@ class MyApp extends ConsumerStatefulWidget {
   ConsumerState<MyApp> createState() => _MyAppState();
 }
 
-bool state = true;
 
 class _MyAppState extends ConsumerState<MyApp> {
   @override
@@ -33,23 +31,24 @@ class _MyAppState extends ConsumerState<MyApp> {
     BuildContext context,
   ) {
     ref.watch(authProvider.notifier);
-    //ref.read(authProvider.notifier).signOut();
+   // ref.watch(authProvider.notifier).signOut();
+ 
     return MaterialApp(
       theme: ThemeData().copyWith(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
       ),
-      home: StreamBuilder(
-        stream: FirebaseAuth.instance.userChanges(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const WaitingScreen();
-          }
-          if (snapshot.hasData) {
-            return const HomeScreen();
-          }
-          return const AuthScreen();
-        },
+      home: SafeArea(
+        child: StreamBuilder(
+          stream: FirebaseAuth.instance.userChanges(),
+          builder: (context, snapshot) {
+            
+            if (snapshot.hasData) {
+              return const HomeScreen();
+            }
+            return const AuthScreen();
+          },
+        ),
       ),
     );
   }
