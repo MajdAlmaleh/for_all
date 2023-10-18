@@ -2,9 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:for_all/main.dart';
+//import 'package:for_all/main.dart';
 import 'package:for_all/providers/user_provider.dart';
-import 'package:for_all/widgets/user_image_picker.dart';
+import 'package:for_all/widgets/my_image_picker.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
   const AuthScreen({super.key});
@@ -71,15 +71,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   if (_isSignUp)
-                  
-                        UserImagePicker(
-                          onPickImage: (pickedImage) {
-                            _selectedImage = pickedImage;
-                          },
-                        ),
-                      
-                     
-                    
+                    MyImagePicker(
+                      onPickImage: (pickedImage) {
+                        _selectedImage = pickedImage;
+                      },
+                    ),
                   Form(
                     key: _form,
                     child: Column(

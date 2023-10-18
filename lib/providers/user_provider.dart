@@ -59,6 +59,7 @@ class UserNotifier extends StateNotifier<User?> {
       {required username, String? bio, String? userImageUrl}) async {
     if (state != null) {
       await FirebaseFirestore.instance.collection('users').doc(state!.uid).set({
+        'uid':state!.uid,
         'username': username,
         if (bio != null) 'bio': bio,
         if (userImageUrl != null) 'image_url': userImageUrl,
@@ -66,14 +67,29 @@ class UserNotifier extends StateNotifier<User?> {
     }
   }
 
-  Future<String> getUsername() async {
-    final username = await FirebaseFirestore.instance
+ Future<String?> getUserName({required String uid}) async {
+    DocumentSnapshot docSnapshot = await FirebaseFirestore.instance
         .collection('users')
-        .doc(state!.uid)
-        .collection('username')
+        .doc(uid)
         .get();
-    return username.toString();
+    Map<String, dynamic> data = docSnapshot.data() as Map<String, dynamic>;
+   
+    return data['username'];
   }
+
+  Future<String?> getUserImage({required String uid}) async {
+    DocumentSnapshot docSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .get();
+    Map<String, dynamic> data = docSnapshot.data() as Map<String, dynamic>;
+    return  data['image_url'];
+  }//todo for bio
+
+
+
+
+  
 }
 
 final authProvider =

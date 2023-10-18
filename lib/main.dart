@@ -31,7 +31,6 @@ class _MyAppState extends ConsumerState<MyApp> {
     BuildContext context,
   ) {
     ref.watch(authProvider.notifier);
-   // ref.watch(authProvider.notifier).signOut();
  
     return MaterialApp(
       theme: ThemeData().copyWith(
