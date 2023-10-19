@@ -33,6 +33,7 @@ class _MyAppState extends ConsumerState<MyApp> {
     ref.watch(authProvider.notifier);
  
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData().copyWith(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),

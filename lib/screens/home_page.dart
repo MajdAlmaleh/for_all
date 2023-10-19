@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:for_all/screens/profile.dart';
+import 'package:for_all/widgets/posts.dart';
 
 class HomePageScreen extends StatefulWidget {
   const HomePageScreen({super.key});
@@ -40,11 +42,44 @@ class _HomePageScreenState extends State<HomePageScreen> {
               ));
             } else {
               ScaffoldMessenger.of(context).clearSnackBars();
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('user not found')));
+              ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('user not found')));
             }
           },
           child: const Text('find'),
-        )
+        ),
+        StreamBuilder(
+          stream: FirebaseFirestore.instance
+              .collection('follows')
+              .doc(FirebaseAuth.instance.currentUser!.uid)
+              .collection('follow')
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator();
+            }
+
+            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              return const Text('No posts yet');
+            }
+
+            return Expanded(
+              child: ListView(
+                padding: EdgeInsets.all(0),
+                children: snapshot.data!.docs.map<Widget>(
+                  (DocumentSnapshot document) {
+                    Map<String, dynamic> data =
+                        document.data() as Map<String, dynamic>;
+                    return PostsBuilder(
+                      uid: data['follow_id'],
+                      isOrderd: false,
+                    );
+                  },
+                ).toList(),
+              ),
+            );
+          },
+        ),
       ],
     );
   }

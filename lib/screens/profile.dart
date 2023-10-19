@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:for_all/providers/user_provider.dart';
 import 'package:for_all/screens/posting.dart';
+import 'package:for_all/widgets/posts.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key, required this.uid});
@@ -44,10 +45,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           child: Column(
             children: [
               buildProfileHeader(),
+                 if (username != null) Text(username!), //todo add bio
+              if (widget.uid != FirebaseAuth.instance.currentUser!.uid)
               buildFollowButton(),
               if (widget.uid == FirebaseAuth.instance.currentUser!.uid)
                 buildNewPostButton(),
-              buildUserPosts(),
+             PostsBuilder(uid: widget.uid,isOrderd: true,),
             ],
           ),
         ),
@@ -141,33 +144,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         label: Text('New post'),
         avatar: Icon(Icons.add),
       ),
-    );
-  }
-
-  Widget buildUserPosts() {
-    return StreamBuilder(
-      stream: FirebaseFirestore.instance
-          .collection('posts')
-          .doc(widget.uid)
-          .collection('post')
-          .orderBy('createdAt', descending: true)
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
-        }
-
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return const Text('No posts yet');
-        }
-
-        return Column(
-          children: snapshot.data!.docs.map((DocumentSnapshot document) {
-            Map<String, dynamic> data = document.data() as Map<String, dynamic>;
-            return Text(data['post_text']);
-          }).toList(),
-        );
-      },
     );
   }
 }

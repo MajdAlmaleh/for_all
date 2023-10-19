@@ -12,7 +12,12 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int screenIndex = 0;
-  List<Widget> screens =const [HomePageScreen(),ChatsScreen(),SettingsScreen()];
+  String uid = '';
+  List<Widget> screens = const [
+    HomePageScreen(),
+    ChatsScreen(),
+    SettingsScreen()
+  ];
 
   @override
   Widget build(BuildContext context) {
