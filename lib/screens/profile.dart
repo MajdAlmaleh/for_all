@@ -50,7 +50,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               buildFollowButton(),
               if (widget.uid == FirebaseAuth.instance.currentUser!.uid)
                 buildNewPostButton(),
-             PostsBuilder(uid: widget.uid,isOrderd: true,),
+             PostsBuilder(uid: widget.uid),
             ],
           ),
         ),
@@ -98,6 +98,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               .collection('follow')
               .where('follow_id', isEqualTo: widget.uid)
               .get();
+          // ignore: avoid_function_literals_in_foreach_calls
           snapshot.docs.forEach((document) async {
             await document.reference.delete();
           });

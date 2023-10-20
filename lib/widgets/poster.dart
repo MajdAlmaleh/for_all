@@ -110,6 +110,8 @@ class _PosterState extends State<Poster> {
                   'createdAt': createdAt,
                   'post_text': textController.text,
                   'post_data': dataUrl,
+                  
+                  'userId': FirebaseAuth.instance.currentUser!.uid,
                 });
               } else {
                 await FirebaseFirestore.instance
@@ -119,6 +121,7 @@ class _PosterState extends State<Poster> {
                     .add({
                   'createdAt': createdAt,
                   'post_text': textController.text,
+                  'userId': FirebaseAuth.instance.currentUser!.uid,
                 });
               }
               // ignore: use_build_context_synchronously
