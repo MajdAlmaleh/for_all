@@ -45,12 +45,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           child: Column(
             children: [
               buildProfileHeader(),
-                 if (username != null) Text(username!), //todo add bio
+              if (username != null) Text(username!), //todo add bio
               if (widget.uid != FirebaseAuth.instance.currentUser!.uid)
-              buildFollowButton(),
+                buildFollowButton(),
               if (widget.uid == FirebaseAuth.instance.currentUser!.uid)
                 buildNewPostButton(),
-             PostsBuilder(uid: widget.uid),
+              PostsBuilder(uid: widget.uid),
             ],
           ),
         ),
@@ -89,6 +89,22 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               .add({
             'follow_id': widget.uid,
           });
+
+          await FirebaseFirestore.instance
+              .collection('chats')
+              .doc(FirebaseAuth.instance.currentUser!.uid)
+              .collection('chat')
+              .add({
+            'chat_id': widget.uid,
+          });
+          await FirebaseFirestore.instance
+              .collection('chats')
+              .doc(widget.uid)
+              .collection('chat')
+              .add({
+            'chat_id': FirebaseAuth.instance.currentUser!.uid,
+          });
+
           isFollowing = true;
         } else if (isFollowing!) {
           // Unfollow the user
@@ -102,9 +118,32 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           snapshot.docs.forEach((document) async {
             await document.reference.delete();
           });
+       
+          final snapshot1 = await FirebaseFirestore.instance
+              .collection('chats')
+              .doc(FirebaseAuth.instance.currentUser!.uid)
+              .collection('chat')
+              .where('chat_id', isEqualTo: widget.uid)
+              .get();
+          // ignore: avoid_function_literals_in_foreach_calls
+          snapshot1.docs.forEach((document) async {
+            await document.reference.delete();
+          });
+       
+          final snapshot2 = await FirebaseFirestore.instance
+              .collection('chats')
+              .doc(widget.uid)
+              .collection('chat')
+              .where('chat_id', isEqualTo:FirebaseAuth.instance.currentUser!.uid )
+              .get();
+          // ignore: avoid_function_literals_in_foreach_calls
+          snapshot2.docs.forEach((document) async {
+            await document.reference.delete();
+          });
+       
           isFollowing = false;
         }
-        setState(() {});
+          setState(() {});
       },
       child: Chip(
         label: FutureBuilder(

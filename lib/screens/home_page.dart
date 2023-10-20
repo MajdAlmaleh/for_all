@@ -99,7 +99,6 @@ class _HomePageScreenState extends State<HomePageScreen> {
                   return const Text('No posts yet');
                 }
 
-                // Sort posts based on createdAt
                 posts.sort((a, b) {
                   int timestampA = a['createdAt'];
                   int timestampB = b['createdAt'];
@@ -111,7 +110,9 @@ class _HomePageScreenState extends State<HomePageScreen> {
                     children: posts.map<Widget>((DocumentSnapshot document) {
                       Map<String, dynamic> data =
                           document.data() as Map<String, dynamic>;
-                      return Center(child: Text(data['post_text']));
+                      return Center(
+                          child:
+                              Text(data['post_text'])); //todo and images later
                     }).toList(),
                   ),
                 );
