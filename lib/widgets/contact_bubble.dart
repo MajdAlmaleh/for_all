@@ -38,9 +38,10 @@ class _ContactBubbleState extends ConsumerState<ContactBubble> {
   Widget build(
     BuildContext context,
   ) {
-    //ref.watch(authProvider.notifier);
+   
 
     return ListTile(
+      
       leading: CircleAvatar(
         radius: 30,
         backgroundImage: userImage != null ? NetworkImage(userImage) : null,
@@ -50,7 +51,7 @@ class _ContactBubbleState extends ConsumerState<ContactBubble> {
         Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const ChatScreen(),
+              builder: (context) =>  ChatScreen(receiver: widget.uid,),
             ));
       },
     );

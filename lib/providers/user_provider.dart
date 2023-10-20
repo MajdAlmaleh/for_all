@@ -9,34 +9,45 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserNotifier extends StateNotifier<User?> {
   UserNotifier() : super(FirebaseAuth.instance.currentUser);
+Future<void> signUp(
+    {required String email,
+    required String password,
+    required String username,
+    File? userImage,
+    String? bio}) async {
+  try {
+    // Check if the username already exists
+    final usernameSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('username', isEqualTo: username)
+        .get();
 
-  Future<void> signUp(
-      //todo photo
-      {required String email,
-      required String password,
-      required String username,
-      File? userImage,
-      String? bio}) async {
-    try {
-      UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password);
-      final storageRef = FirebaseStorage.instance
-          .ref()
-          .child('user_images')
-          .child('${userCredential.user!.uid}.jpg');
-      await storageRef.putFile(userImage!);
-      final imageUrl = await storageRef.getDownloadURL();
-      state = userCredential.user;
-
-      if (state != null) {
-        await updateUserProfile(
-            username: username, bio: bio, userImageUrl: imageUrl);
-      }
-    } catch (e) {
-      throw e;
+    if (usernameSnapshot.docs.isNotEmpty) {
+      throw Exception('Username already taken');
     }
-  }
 
+  
+    // Create the user in Firebase Auth
+    UserCredential userCredential = await FirebaseAuth.instance
+        .createUserWithEmailAndPassword(email: email, password: password);
+    state = userCredential.user;
+  // Upload the image to Firebase Storage and get the download URL
+    final storageRef = FirebaseStorage.instance
+        .ref()
+        .child('user_images')
+        .child('$username.jpg');
+    await storageRef.putFile(userImage!);
+    final imageUrl = await storageRef.getDownloadURL();
+
+    // Create the user document in Firestore
+    if (state != null) {
+      await updateUserProfile(
+          username: username, bio: bio, userImageUrl: imageUrl);
+    }
+  } catch (e) {
+    throw e;
+  }
+}
   Future<void> signIn({
     required String email,
     required String password,
@@ -78,9 +89,11 @@ class UserNotifier extends StateNotifier<User?> {
   }
 
   Future<String?> getUserImage({required String uid}) async {
+    
     DocumentSnapshot docSnapshot = await FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
+        
         .get();
     Map<String, dynamic> data = docSnapshot.data() as Map<String, dynamic>;
     return  data['image_url'];

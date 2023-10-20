@@ -82,6 +82,29 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           return;
         } else if (!isFollowing!) {
           // Follow the user
+          final snapshot1 = await FirebaseFirestore.instance
+              .collection('chats')
+              .doc(FirebaseAuth.instance.currentUser!.uid)
+              .collection('chat')
+              .where('chat_id', isEqualTo: widget.uid)
+              .get();
+          // ignore: avoid_function_literals_in_foreach_calls
+          snapshot1.docs.forEach((document) async {
+            await document.reference.delete();
+          });
+       
+          final snapshot2 = await FirebaseFirestore.instance
+              .collection('chats')
+              .doc(widget.uid)
+              .collection('chat')
+              .where('chat_id', isEqualTo:FirebaseAuth.instance.currentUser!.uid )
+              .get();
+          // ignore: avoid_function_literals_in_foreach_calls
+          snapshot2.docs.forEach((document) async {
+            await document.reference.delete();
+          });
+
+
           await FirebaseFirestore.instance
               .collection('follows')
               .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -143,7 +166,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
        
           isFollowing = false;
         }
+        if(mounted){
           setState(() {});
+        }
+          
       },
       child: Chip(
         label: FutureBuilder(

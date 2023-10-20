@@ -18,18 +18,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   @override
   void initState() {
     super.initState();
+  
   }
 
   void getUserImage() async {
-    userImage = await ref.read(authProvider.notifier).getUserImage(uid: FirebaseAuth.instance.currentUser!.uid);
-    if (mounted){   setState(() {});}
- 
+    userImage = await ref//todo handle error
+        .watch(authProvider.notifier)
+        .getUserImage(uid: FirebaseAuth.instance.currentUser!.uid);
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     getUserImage();
-   
 
     return Column(
       children: [
@@ -38,7 +41,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             tag: 0,
             child: CircleAvatar(
               radius: 30,
-              backgroundImage: userImage != null ? NetworkImage(userImage) : null,
+              backgroundImage:
+                  userImage != null ? NetworkImage(userImage) : null,
             ),
           ),
           title: const Text('Profile'),
@@ -46,12 +50,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>  ProfileScreen( uid: FirebaseAuth.instance.currentUser!.uid,),
+                  builder: (context) => ProfileScreen(
+                    uid: FirebaseAuth.instance.currentUser!.uid,
+                  ),
                 ));
           },
         ),
-const Spacer(),
-
+        const Spacer(),
         TextButton(
             onPressed: () {
               ref.read(authProvider.notifier).signOut();

@@ -27,6 +27,13 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   final _form = GlobalKey<FormState>();
 
   void _submit() async {
+    if (_selectedImage == null && _isSignUp) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('please select an image')));
+      return;
+    }
+
     final isValid = _form.currentState!.validate();
 
     if (!isValid) {
