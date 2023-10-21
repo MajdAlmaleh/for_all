@@ -1,19 +1,23 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:for_all/providers/user_provider.dart';
+import 'package:for_all/service/chat_serveice.dart';
 
-class NewMessage extends StatefulWidget {
+class NewMessage extends ConsumerStatefulWidget {
   const NewMessage({super.key, required this.receiver});
   final String receiver;
 
   @override
-  State<NewMessage> createState() {
+  ConsumerState<NewMessage> createState() {
     return _NewMessageState();
   }
 }
 
-class _NewMessageState extends State<NewMessage> {
+class _NewMessageState extends ConsumerState<NewMessage> {
   final _messageController = TextEditingController();
+  ChatService chatService = ChatService();
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   @override
   void dispose() {
@@ -21,28 +25,25 @@ class _NewMessageState extends State<NewMessage> {
     super.dispose();
   }
 
-  void _submitMessage() async {
-    final enteredMessage = _messageController.text;
+  Future<void> _submitMessage() async {
+    final enteredMessage = _messageController.text.trim();
 
-    if (enteredMessage.trim().isEmpty) {
+    if (enteredMessage.isEmpty) {
       return;
     }
     _messageController.clear();
-    FocusScope.of(context).unfocus();
-    final user = FirebaseAuth.instance.currentUser!;
-    final getData = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .get();
+    final userName = await ref
+        .read(authProvider.notifier)
+        .getUserName(uid: _firebaseAuth.currentUser!.uid);
+    final userImage = await ref
+        .read(authProvider.notifier)
+        .getUserImage(uid: _firebaseAuth.currentUser!.uid);
 
-    FirebaseFirestore.instance.collection('chat').doc(user.uid).collection('massege').add({
-      'text': enteredMessage,
-      'createdAt': Timestamp.now(),
-      'receiverId': widget.receiver,
-      'userName': getData.data()!['username'],
-      'userImage': getData.data()!['image_url'],
-      'userId': user.uid, // Add this line to store the user's ID
-    });
+    
+    //  FocusScope.of(context).unfocus();
+
+    chatService.sendMessage(
+        widget.receiver, enteredMessage, userName!, userImage!);
   }
 
   @override
