@@ -127,6 +127,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                             onSaved: (newValue) {
                               _enterdUserName = newValue!;
                             },
+                            maxLength: 22,
                             validator: (value) {
                               if (value == null ||
                                   value.trim().isEmpty ||

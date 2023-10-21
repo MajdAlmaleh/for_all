@@ -6,15 +6,16 @@ import 'package:for_all/providers/user_provider.dart';
 import 'package:for_all/screens/auth.dart';
 import 'firebase_options.dart';
 import 'package:for_all/screens/home.dart';
-
-
+import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const ProviderScope(child: MyApp()));
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then(
+    (value) => runApp(const ProviderScope(child: MyApp())),
+  );
 }
 
 class MyApp extends ConsumerStatefulWidget {
@@ -24,14 +25,13 @@ class MyApp extends ConsumerStatefulWidget {
   ConsumerState<MyApp> createState() => _MyAppState();
 }
 
-
 class _MyAppState extends ConsumerState<MyApp> {
   @override
   Widget build(
     BuildContext context,
   ) {
     ref.watch(authProvider.notifier);
- 
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData().copyWith(
@@ -42,7 +42,6 @@ class _MyAppState extends ConsumerState<MyApp> {
         child: StreamBuilder(
           stream: FirebaseAuth.instance.userChanges(),
           builder: (context, snapshot) {
-            
             if (snapshot.hasData) {
               return const HomeScreen();
             }

@@ -23,15 +23,16 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         bottomNavigationBar: BottomNavigationBar(
+          
           items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.home),
-              label: 'home',
+              label: 'Home',
             ),
             BottomNavigationBarItem(
-                icon: Icon(Icons.chat_bubble_outline_sharp), label: 'chats'),
+                icon: Icon(Icons.chat_bubble_outline_sharp), label: 'Chats'),
             BottomNavigationBarItem(
-                icon: Icon(Icons.settings), label: 'settings'),
+                icon: Icon(Icons.settings), label: 'Settings'),
           ],
           currentIndex: screenIndex,
           onTap: (value) {

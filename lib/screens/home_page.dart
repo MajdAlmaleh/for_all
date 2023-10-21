@@ -52,14 +52,28 @@ class _HomePageScreenState extends State<HomePageScreen> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        TextField(
-          controller: textController,
-          onChanged: onTextChanged,
+        Container(
+          padding:const EdgeInsets.only(left: 40),
+          margin:const EdgeInsets.all(8),
+          height: 55,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(30), color: Colors.grey[400]),
+          child: Row(
+        
+            children: [
+              Expanded(
+                child: TextField(
+                  style:const TextStyle(fontSize: 20),
+                  controller: textController,
+                  onChanged: onTextChanged,
+                  decoration:const InputDecoration(border: InputBorder.none,),
+                ),
+              ),
+              IconButton(onPressed: onFindPressed, icon:const Icon(Icons.search,size: 50,))
+            ],
+          ),
         ),
-        TextButton(
-          onPressed: onFindPressed,
-          child: const Text('Find'),
-        ),
+
         StreamBuilder(
           stream: FirebaseFirestore.instance
               .collection('follows')

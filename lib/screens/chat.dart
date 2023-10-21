@@ -46,8 +46,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
-        leading: receiverUsername == null ? null :Image.network(receiverUserImage!),
-        title: receiverUsername == null ? null : Text(receiverUsername!)),
+       
+        title: receiverUsername == null ? null : Row(
+       
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+             Padding(
+               padding: const EdgeInsets.all(4.0),
+               child: CircleAvatar(backgroundImage: NetworkImage(receiverUserImage!),),
+             ),
+            Text(receiverUsername!),
+          ],
+        )),
       body: Column(children: [
         Expanded(
             child: ChatMessages(

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,56 +27,52 @@ class _ChatMessagesState extends ConsumerState<ChatMessages> {
     ref.watch(authProvider.notifier);
     final userId = FirebaseAuth.instance.currentUser!.uid;
     return StreamBuilder(
-        stream: chatService.getMessages(userId, widget.receiver),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-         
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(
-              child: Text('No messages found.'),
-            );
-          }
+      stream: chatService.getMessages(userId, widget.receiver),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
 
-          final loadedMessages = snapshot.data!.docs;
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return const Center(
+            child: Text('No messages found.'),
+          );
+        }
 
-   final ScrollController scrollController = ScrollController();
-    
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      scrollController.animateTo(
-        scrollController.position.maxScrollExtent,
-        duration:const Duration(milliseconds: 200),
-        curve: Curves.easeOut,
-      );
-    });
+        final loadedMessages = snapshot.data!.docs;
 
+        final ScrollController scrollController = ScrollController();
 
-
-
-          return ListView.builder(
-              padding: const EdgeInsets.only(
-                bottom: 40,
-                left: 13,
-                right: 13,
-              ),
-              reverse: false,
-              controller: scrollController,
-              itemCount: loadedMessages.length,
-              itemBuilder: (context, index) {
-               Map<String, dynamic> data =
-                    loadedMessages[index].data() as Map<String, dynamic>;
-
-                
-                  return MessageBubble(
-                    message: data['messageText'],
-                    isMe: data['senderId'] ==
-                        FirebaseAuth.instance.currentUser!.uid,
-                  );
-              
-              });
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          scrollController.animateTo(
+            scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOut,
+          );
         });
+
+        return ListView.builder(
+          padding: const EdgeInsets.only(
+            bottom: 40,
+            left: 13,
+            right: 13,
+          ),
+          reverse: false,
+          controller: scrollController,
+          itemCount: loadedMessages.length,
+          itemBuilder: (context, index) {
+            Map<String, dynamic> data =
+                loadedMessages[index].data() as Map<String, dynamic>;
+
+            return MessageBubble(
+              message: data['messageText'],
+              isMe: data['senderId'] == FirebaseAuth.instance.currentUser!.uid,
+            );
+          },
+        );
+      },
+    );
   }
 }
