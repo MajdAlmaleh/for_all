@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:for_all/providers/old_messages_provider.dart';
 import 'package:for_all/providers/user_provider.dart';
 import 'package:for_all/service/chat_serveice.dart';
 
@@ -39,11 +40,12 @@ class _NewMessageState extends ConsumerState<NewMessage> {
         .read(authProvider.notifier)
         .getUserImage(uid: _firebaseAuth.currentUser!.uid);
 
-    
     //  FocusScope.of(context).unfocus();
 
     chatService.sendMessage(
         widget.receiver, enteredMessage, userName!, userImage!);
+
+  //  ref.read(oldMessagesProvider.notifier).newChat();
   }
 
   @override

@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -65,10 +64,18 @@ class _ChatMessagesState extends ConsumerState<ChatMessages> {
           itemBuilder: (context, index) {
             Map<String, dynamic> data =
                 loadedMessages[index].data() as Map<String, dynamic>;
+            final isReceiver =
+                data['senderId'] != FirebaseAuth.instance.currentUser!.uid;
+            final messageStatus = data['messageStatus'];
+            final isSeen = data['seen'];
+
+            if (isReceiver && messageStatus == 'sent' && !isSeen) {
+              chatService.markMessageAsSeen(loadedMessages[index].reference);
+            }
 
             return MessageBubble(
               message: data['messageText'],
-              isMe: data['senderId'] == FirebaseAuth.instance.currentUser!.uid,
+              isMe: !isReceiver,
             );
           },
         );

@@ -1,13 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:for_all/widgets/contact_bubble.dart';
 
-class ChatsScreen extends StatelessWidget {
+class ChatsScreen extends ConsumerWidget {
   const ChatsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context,WidgetRef ref) {
+
     return StreamBuilder(
       stream: FirebaseFirestore.instance
           .collection('chats')

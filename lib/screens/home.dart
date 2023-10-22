@@ -11,7 +11,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int screenIndex = 0;
+  int screenIndex = 1;
   String uid = '';
   List<Widget> screens = const [
     HomePageScreen(),
@@ -23,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         bottomNavigationBar: BottomNavigationBar(
-          
+
           items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.home),

@@ -7,7 +7,9 @@ class Message {
   final String messageText;
   final String senderImage;
   final Timestamp timestamp;
-  final bool seen;
+    bool seen;
+  String messageStatus;
+
 
   Message(
       {required this.senderId,
@@ -15,7 +17,10 @@ class Message {
       required this.senderUsername,
       required this.senderImage,
       required this.messageText,
-      required this.timestamp,required this.seen});
+      required this.timestamp,
+      required this.seen,
+      required this.messageStatus
+    });
 
   Map<String, dynamic> toMap() {
     return {
@@ -25,7 +30,8 @@ class Message {
       'senderImage': senderImage,
       'messageText': messageText,
       'createdAt': timestamp,
-      'seen': seen,
+        'seen': seen,
+    'messageStatus': messageStatus,
     };
   }
 }

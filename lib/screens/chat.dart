@@ -29,12 +29,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     receiverUsername = await ref
         .watch(authProvider.notifier)
         .getUserName(uid: widget.receiver);
-        if (mounted) {
+    if (mounted) {
       receiverUserImage = await ref
-        .watch(authProvider.notifier)
-        .getUserImage(uid: widget.receiver);
+          .watch(authProvider.notifier)
+          .getUserImage(uid: widget.receiver);
     }
-   
+
     if (mounted) {
       setState(() {});
     }
@@ -44,29 +44,35 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   Widget build(BuildContext context) {
     ref.watch(authProvider.notifier);
     return SafeArea(
-        child: Scaffold(
-      appBar: AppBar(
-       
-        title: receiverUsername == null ? null : Row(
-       
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-             Padding(
-               padding: const EdgeInsets.all(4.0),
-               child: CircleAvatar(backgroundImage: NetworkImage(receiverUserImage!),),
-             ),
-            Text(receiverUsername!),
-          ],
-        )),
-      body: Column(children: [
-        Expanded(
-            child: ChatMessages(
-          receiver: widget.receiver,
-        )),
-        NewMessage(
-          receiver: widget.receiver,
-        ),
-      ]),
-    ));
+
+      child: Scaffold(
+        appBar: AppBar(
+            title: receiverUsername == null
+                ? null
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: CircleAvatar(
+                          backgroundImage: NetworkImage(receiverUserImage!),
+                        ),
+                      ),
+                      Text(receiverUsername!),
+                    ],
+                  )),
+        body: Column(children: [
+          Expanded(
+              child: ChatMessages(
+            receiver: widget.receiver,
+          )),
+          NewMessage(
+            receiver: widget.receiver,
+          ),
+        ]),
+      ),
+    )
+   // )
+    ;
   }
 }
