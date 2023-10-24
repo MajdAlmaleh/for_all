@@ -2,9 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class PostsBuilder extends StatelessWidget {
-  const PostsBuilder({super.key, required this.uid,});
+  const PostsBuilder({
+    super.key,
+    required this.uid,
+  });
   final String uid;
-  
 
   @override
   Widget build(BuildContext context) {

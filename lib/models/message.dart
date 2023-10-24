@@ -7,9 +7,9 @@ class Message {
   final String messageText;
   final String senderImage;
   final Timestamp timestamp;
-    bool seen;
-  String messageStatus;
-
+  final bool seen;
+  final String messageStatus;
+  final String? replayTo;
 
   Message(
       {required this.senderId,
@@ -19,8 +19,10 @@ class Message {
       required this.messageText,
       required this.timestamp,
       required this.seen,
-      required this.messageStatus
-    });
+      required this.messageStatus,
+     required this.replayTo,
+
+      });
 
   Map<String, dynamic> toMap() {
     return {
@@ -30,8 +32,9 @@ class Message {
       'senderImage': senderImage,
       'messageText': messageText,
       'createdAt': timestamp,
-        'seen': seen,
-    'messageStatus': messageStatus,
+      'seen': seen,
+      'messageStatus': messageStatus,
+      'replayTo':replayTo
     };
   }
 }

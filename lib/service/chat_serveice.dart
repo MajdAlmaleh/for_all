@@ -7,7 +7,7 @@ class ChatService extends ChangeNotifier {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   Future<void> sendMessage(String receiverId, String messageText,
-      String currentUserUsername, String userImageUrl) async {
+      String currentUserUsername, String userImageUrl,String? replayTo) async {
     final String currentUserId = _firebaseAuth.currentUser!.uid;
     final String currentUsername = currentUserUsername;
     final String currentUserImage = userImageUrl;
@@ -23,6 +23,8 @@ class ChatService extends ChangeNotifier {
       timestamp: timestamp,
           seen: false,
     messageStatus: 'sent',
+    replayTo: replayTo,
+
       
     );
     List<String> ids = [currentUserId, receiverId];
@@ -56,6 +58,7 @@ class ChatService extends ChangeNotifier {
       await messageRef.update({'seen': true});
     } catch (e) {
       // Handle any potential errors, e.g., database access errors
+      // ignore: avoid_print
       print('Error marking message as seen: $e');
     }
   }

@@ -12,7 +12,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int screenIndex = 1;
-  String uid = '';
   List<Widget> screens = const [
     HomePageScreen(),
     ChatsScreen(),

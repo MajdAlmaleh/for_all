@@ -43,14 +43,42 @@ class _ContactBubbleState extends ConsumerState<ContactBubble> {
         .map((querySnapshot) {
       if (querySnapshot.docs.isNotEmpty) {
         final lastMessage = querySnapshot.docs.first;
-        final messageStatus = lastMessage['messageStatus'];
+        // final messageStatus = lastMessage['messageStatus'];
         final seen = lastMessage['seen'];
         if (FirebaseAuth.instance.currentUser!.uid == lastMessage['senderId']) {
           return false;
         }
-        return messageStatus == 'sent' && !seen;
+        return !seen; //messageStatus == 'sent' &&
       }
       return false; // No messages found
+    });
+  }
+
+  String getLastMessage = '';
+
+  Stream lastNewMessagesStream(String userId, String otherUserId) {
+    List<String> ids = [userId, otherUserId];
+    ids.sort();
+    String chatRoomId = ids.join('_');
+    return _firebaseFirestore
+        .collection('chat_rooms')
+        .doc(chatRoomId)
+        .collection('messages')
+        .orderBy('createdAt', descending: true)
+        .limit(1)
+        .snapshots()
+        .map((querySnapshot) {
+      if (querySnapshot.docs.isNotEmpty) {
+        final lastMessage = querySnapshot.docs.first;
+        // final messageStatus = lastMessage['messageStatus'];
+        return lastMessage['messageText'].toString();
+        /*  if (FirebaseAuth.instance.currentUser!.uid == lastMessage['senderId']) {
+          return false;
+        } */
+        // return !seen; //messageStatus == 'sent' &&
+      }
+      return null;
+      //return false; // No messages found
     });
   }
 
@@ -73,7 +101,7 @@ class _ContactBubbleState extends ConsumerState<ContactBubble> {
           FirebaseAuth.instance.currentUser!.uid, widget.uid),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();//TODO change this because its ugly
+          return const CircularProgressIndicator(); //TODO change this because its ugly
         }
 
         final bool hasNewMessages = snapshot.data ?? false;
@@ -84,6 +112,20 @@ class _ContactBubbleState extends ConsumerState<ContactBubble> {
             backgroundImage: userImage != null ? NetworkImage(userImage) : null,
           ),
           title: username != null ? Text(username!) : null,
+          subtitle: StreamBuilder(
+            stream: lastNewMessagesStream(
+                FirebaseAuth.instance.currentUser!.uid, widget.uid),
+            builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator(
+            
+          ); //TODO change this because its ugly
+        }
+
+
+              return Text(snapshot.data);
+            },
+          ),
           trailing: hasNewMessages
               ? const CircleAvatar(
                   radius: 5,
