@@ -44,17 +44,17 @@ class _NewMessageState extends ConsumerState<NewMessage> {
 
     chatService.sendMessage(widget.receiver, enteredMessage, userName!,
         userImage!, ref.read(replyMessageProvider.notifier).getReplay());
+            ref.read(replyMessageProvider.notifier).cancleReplay();
+
   }
 
   @override
   Widget build(BuildContext context) {
     ref.watch(replyMessageProvider);
     return Column(
-
       children: [
         if (ref.watch(replyMessageProvider.notifier).getReplay() != null)
           Container(
-
             height: 70,
             width: double.infinity,
             decoration: const BoxDecoration(

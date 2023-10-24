@@ -74,6 +74,7 @@ class _ChatMessagesState extends ConsumerState<ChatMessages> {
             }
 
             return MessageBubble(
+              replay: data['replayTo'],
               message: data['messageText'],
               isMe: !isReceiver,
             );
