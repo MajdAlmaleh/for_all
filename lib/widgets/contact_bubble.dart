@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:for_all/providers/user_provider.dart';
+import 'package:for_all/providers/auth_provider.dart';
 import 'package:for_all/screens/chat.dart';
 import 'package:for_all/service/chat_serveice.dart';
 
@@ -83,15 +83,17 @@ class _ContactBubbleState extends ConsumerState<ContactBubble> {
   }
 
   Future<void> loadUserData() async {
-    userImage =
-        await ref.read(authProvider.notifier).getUserImage(uid: widget.uid);
-    if (mounted) {
-      username =
-          await ref.read(authProvider.notifier).getUserName(uid: widget.uid);
+    
+      userImage =
+          await ref.read(authProvider.notifier).getUserImage(uid: widget.uid);
       if (mounted) {
-        setState(() {});
+        username =
+            await ref.read(authProvider.notifier).getUserName(uid: widget.uid);
+        if (mounted) {
+          setState(() {});
+        }
       }
-    }
+    
   }
 
   @override
@@ -116,12 +118,9 @@ class _ContactBubbleState extends ConsumerState<ContactBubble> {
             stream: lastNewMessagesStream(
                 FirebaseAuth.instance.currentUser!.uid, widget.uid),
             builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator(
-            
-          ); //TODO change this because its ugly
-        }
-
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator(); //TODO change this because its ugly
+              }
 
               return Text(snapshot.data);
             },

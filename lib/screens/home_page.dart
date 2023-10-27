@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:for_all/screens/profile.dart';
+import 'package:for_all/widgets/post.dart';
 
 class HomePageScreen extends StatefulWidget {
   const HomePageScreen({super.key});
@@ -95,43 +96,50 @@ class _HomePageScreenState extends State<HomePageScreen> {
             //todo keep   followedUserIds = followDocs.docs.map((doc) => doc.id).toList();
 
             return StreamBuilder(
-              stream: FirebaseFirestore.instance
-                  .collectionGroup('post')
-                  .where('userId', whereIn: followedUserIds)
-                  .orderBy('createdAt', descending: true)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator();
-                }
-                if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
-                }
+  stream: FirebaseFirestore.instance
+      .collectionGroup('post')
+      .where('userId', whereIn: followedUserIds)
+      .orderBy('createdAt', descending: true)
+      .snapshots(),
+  builder: (context, snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return const CircularProgressIndicator();
+    }
+    if (snapshot.hasError) {
+      return Text('Error: ${snapshot.error}');
+    }
 
-                final posts = snapshot.data!.docs;
-                if (!snapshot.hasData || posts.isEmpty) {
-                  return const Text('No posts yet');
-                }
+    final posts = snapshot.data!.docs;
+    if (!snapshot.hasData || posts.isEmpty) {
+      return const Text('No posts yet');
+    }
 
-                posts.sort((a, b) {
-                  int timestampA = a['createdAt'];
-                  int timestampB = b['createdAt'];
-                  return timestampB.compareTo(timestampA);
-                });
+    posts.sort((a, b) {
+      int timestampA = a['createdAt'];
+      int timestampB = b['createdAt'];
+      return timestampB.compareTo(timestampA);
+    });
 
-                return Expanded(
-                  child: ListView(
-                    children: posts.map<Widget>((DocumentSnapshot document) {
-                      Map<String, dynamic> data =
-                          document.data() as Map<String, dynamic>;
-                      return Center(
-                          child:
-                              Text(data['post_text'])); //todo and images later
-                    }).toList(),
-                  ),
-                );
-              },
-            );
+    return Expanded(
+      child: ListView.builder(
+        itemCount: posts.length,
+        itemBuilder: (context, index) {
+          Map<String, dynamic> data =
+              posts[index].data();
+          return Center(
+            child: Post(
+              postText: data['post_text'], 
+              username: data['username'], 
+              userImage: data['userImage'],
+              postMedia: data['post_data'],
+               mediaType: data['mediaType'],
+            )
+          ); 
+        },
+      ),
+    );
+  },
+);
           },
         )
       ],

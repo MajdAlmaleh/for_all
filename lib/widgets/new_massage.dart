@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:for_all/providers/reply_messages.dart';
-import 'package:for_all/providers/user_provider.dart';
+import 'package:for_all/providers/auth_provider.dart';
 import 'package:for_all/service/chat_serveice.dart';
 
 class NewMessage extends ConsumerStatefulWidget {

@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 //import 'package:for_all/main.dart';
-import 'package:for_all/providers/user_provider.dart';
+import 'package:for_all/providers/auth_provider.dart';
 import 'package:for_all/widgets/my_image_picker.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {

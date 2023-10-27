@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:for_all/providers/user_provider.dart';
+import 'package:for_all/providers/auth_provider.dart';
 import 'package:for_all/service/chat_serveice.dart';
 import 'package:for_all/widgets/chat_messages.dart';
 import 'package:for_all/widgets/new_massage.dart';

@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:for_all/providers/user_provider.dart';
+import 'package:for_all/providers/auth_provider.dart';
 import 'package:for_all/screens/posting.dart';
-import 'package:for_all/widgets/posts.dart';
+import 'package:for_all/widgets/post.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key, required this.uid});
@@ -41,18 +41,61 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              buildProfileHeader(),
-              if (username != null) Text(username!), //todo add bio
-              if (widget.uid != FirebaseAuth.instance.currentUser!.uid)
-                buildFollowButton(),
-              if (widget.uid == FirebaseAuth.instance.currentUser!.uid)
-                buildNewPostButton(),
-              PostsBuilder(uid: widget.uid),
-            ],
-          ),
+        body: Column(
+          children: [
+            buildProfileHeader(),
+            if (username != null) Text(username!), //todo add bio
+            if (widget.uid != FirebaseAuth.instance.currentUser!.uid)
+              buildFollowButton(),
+            if (widget.uid == FirebaseAuth.instance.currentUser!.uid)
+              buildNewPostButton(),
+           StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collectionGroup('post')
+            .where('userId', isEqualTo: widget.uid)
+            .orderBy('createdAt', descending: true)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator();
+          }
+          if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          }
+        
+          final posts = snapshot.data!.docs;
+          if (!snapshot.hasData || posts.isEmpty) {
+            return const Text('No posts yet');
+          }
+        
+          posts.sort((a, b) {
+            int timestampA = a['createdAt'];
+            int timestampB = b['createdAt'];
+            return timestampB.compareTo(timestampA);
+          });
+        
+          return Expanded(
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: posts.length,
+              itemBuilder: (context, index) {
+                  Map<String, dynamic> data =
+            posts[index].data();
+                  return Center(
+                  child: Post(
+            postText: data['post_text'], 
+            username: data['username'], 
+            userImage: data['userImage'],
+            postMedia: data['post_data'],
+            mediaType: data['mediaType'],
+                  )
+                  ); 
+              },
+            ),
+          );
+        },
+        )
+          ]   
         ),
       ),
     );
@@ -92,18 +135,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           snapshot1.docs.forEach((document) async {
             await document.reference.delete();
           });
-       
+
           final snapshot2 = await FirebaseFirestore.instance
               .collection('chats')
               .doc(widget.uid)
               .collection('chat')
-              .where('chat_id', isEqualTo:FirebaseAuth.instance.currentUser!.uid )
+              .where('chat_id',
+                  isEqualTo: FirebaseAuth.instance.currentUser!.uid)
               .get();
           // ignore: avoid_function_literals_in_foreach_calls
           snapshot2.docs.forEach((document) async {
             await document.reference.delete();
           });
-
 
           await FirebaseFirestore.instance
               .collection('follows')
@@ -141,7 +184,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           snapshot.docs.forEach((document) async {
             await document.reference.delete();
           });
-       
+
           final snapshot1 = await FirebaseFirestore.instance
               .collection('chats')
               .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -152,24 +195,24 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           snapshot1.docs.forEach((document) async {
             await document.reference.delete();
           });
-       
+
           final snapshot2 = await FirebaseFirestore.instance
               .collection('chats')
               .doc(widget.uid)
               .collection('chat')
-              .where('chat_id', isEqualTo:FirebaseAuth.instance.currentUser!.uid )
+              .where('chat_id',
+                  isEqualTo: FirebaseAuth.instance.currentUser!.uid)
               .get();
           // ignore: avoid_function_literals_in_foreach_calls
           snapshot2.docs.forEach((document) async {
             await document.reference.delete();
           });
-       
+
           isFollowing = false;
         }
-        if(mounted){
+        if (mounted) {
           setState(() {});
         }
-          
       },
       child: Chip(
         label: FutureBuilder(

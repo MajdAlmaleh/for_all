@@ -7,11 +7,13 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:for_all/providers/auth_provider.dart';
 import 'package:for_all/widgets/my_image_picker.dart';
 //import 'package:video_player/video_player.dart';
 
 // ignore: must_be_immutable
-class Poster extends StatefulWidget {
+class Poster extends ConsumerStatefulWidget {
   bool? text;
   bool? image;
   bool? video;
@@ -23,10 +25,10 @@ class Poster extends StatefulWidget {
   });
 
   @override
-  State<Poster> createState() => _PosterState();
+  ConsumerState<Poster> createState() => _PosterState();
 }
 
-class _PosterState extends State<Poster> {
+class _PosterState extends ConsumerState<Poster> {
   var textController = TextEditingController();
   var _selectedFile;
   var _fileExtinsion;
@@ -40,6 +42,7 @@ class _PosterState extends State<Poster> {
     //  _controller.dispose();
   }
 
+  String mediaType = '';
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -52,6 +55,7 @@ class _PosterState extends State<Poster> {
         ),
         if (widget.image == true)
           MyImagePicker(
+            isPost: true,
             onPickImage: (pickedImage) async {
               _selectedFile = pickedImage;
             },
@@ -87,12 +91,20 @@ class _PosterState extends State<Poster> {
           ),
         TextButton(
             onPressed: () async {
+              final username = await ref
+                  .read(authProvider.notifier)
+                  .getUserName(uid: FirebaseAuth.instance.currentUser!.uid);
+              final userImage = await ref
+                  .read(authProvider.notifier)
+                  .getUserImage(uid: FirebaseAuth.instance.currentUser!.uid);
               var createdAt = DateTime.now().millisecondsSinceEpoch;
               if (widget.image == true || widget.video == true) {
                 if (widget.image == true) {
                   _fileExtinsion = '.jpg';
+                  mediaType = 'image';
                 } else {
                   _fileExtinsion = '.mp4';
+                  mediaType = 'video';
                 }
                 final storageRef = FirebaseStorage.instance
                     .ref()
@@ -110,8 +122,10 @@ class _PosterState extends State<Poster> {
                   'createdAt': createdAt,
                   'post_text': textController.text,
                   'post_data': dataUrl,
-                  
                   'userId': FirebaseAuth.instance.currentUser!.uid,
+                  'username': username,
+                  'userImage': userImage,
+                  'mediaType': mediaType
                 });
               } else {
                 await FirebaseFirestore.instance
@@ -121,7 +135,10 @@ class _PosterState extends State<Poster> {
                     .add({
                   'createdAt': createdAt,
                   'post_text': textController.text,
+                  'username': username,
+                  'userImage': userImage,
                   'userId': FirebaseAuth.instance.currentUser!.uid,
+                  
                 });
               }
               // ignore: use_build_context_synchronously
