@@ -83,17 +83,15 @@ class _ContactBubbleState extends ConsumerState<ContactBubble> {
   }
 
   Future<void> loadUserData() async {
-    
-      userImage =
-          await ref.read(authProvider.notifier).getUserImage(uid: widget.uid);
+    userImage =
+        await ref.read(authProvider.notifier).getUserImage(uid: widget.uid);
+    if (mounted) {
+      username =
+          await ref.read(authProvider.notifier).getUserName(uid: widget.uid);
       if (mounted) {
-        username =
-            await ref.read(authProvider.notifier).getUserName(uid: widget.uid);
-        if (mounted) {
-          setState(() {});
-        }
+        setState(() {});
       }
-    
+    }
   }
 
   @override
@@ -121,7 +119,9 @@ class _ContactBubbleState extends ConsumerState<ContactBubble> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const CircularProgressIndicator(); //TODO change this because its ugly
               }
-
+              if (!snapshot.hasData) {
+                return const Text('');
+              }
               return Text(snapshot.data);
             },
           ),

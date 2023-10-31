@@ -41,62 +41,58 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Column(
-          children: [
-            buildProfileHeader(),
-            if (username != null) Text(username!), //todo add bio
-            if (widget.uid != FirebaseAuth.instance.currentUser!.uid)
-              buildFollowButton(),
-            if (widget.uid == FirebaseAuth.instance.currentUser!.uid)
-              buildNewPostButton(),
-           StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collectionGroup('post')
-            .where('userId', isEqualTo: widget.uid)
-            .orderBy('createdAt', descending: true)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
-          }
-          if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          }
-        
-          final posts = snapshot.data!.docs;
-          if (!snapshot.hasData || posts.isEmpty) {
-            return const Text('No posts yet');
-          }
-        
-          posts.sort((a, b) {
-            int timestampA = a['createdAt'];
-            int timestampB = b['createdAt'];
-            return timestampB.compareTo(timestampA);
-          });
-        
-          return Expanded(
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: posts.length,
-              itemBuilder: (context, index) {
-                  Map<String, dynamic> data =
-            posts[index].data();
-                  return Center(
-                  child: Post(
-            postText: data['post_text'], 
-            username: data['username'], 
-            userImage: data['userImage'],
-            postMedia: data['post_data'],
-            mediaType: data['mediaType'],
-                  )
-                  ); 
-              },
-            ),
-          );
-        },
-        )
-          ]   
-        ),
+        body: Column(children: [
+          buildProfileHeader(),
+          if (username != null) Text(username!), //todo add bio
+          if (widget.uid != FirebaseAuth.instance.currentUser!.uid)
+            buildFollowButton(),
+          if (widget.uid == FirebaseAuth.instance.currentUser!.uid)
+            buildNewPostButton(),
+          StreamBuilder(
+            stream: FirebaseFirestore.instance
+                .collectionGroup('post')
+                .where('userId', isEqualTo: widget.uid)
+                .orderBy('createdAt', descending: true)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              }
+              if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              }
+
+              final posts = snapshot.data!.docs;
+              if (!snapshot.hasData || posts.isEmpty) {
+                return const Text('No posts yet');
+              }
+
+              posts.sort((a, b) {
+                int timestampA = a['createdAt'];
+                int timestampB = b['createdAt'];
+                return timestampB.compareTo(timestampA);
+              });
+
+              return Expanded(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: posts.length,
+                  itemBuilder: (context, index) {
+                    Map<String, dynamic> data = posts[index].data();
+                    return Center(
+                        child: Post(
+                      postText: data['post_text'],
+                      username: data['username'],
+                      userImage: data['userImage'],
+                      postMedia: data['post_data'],
+                      mediaType: data['mediaType'],
+                    ));
+                  },
+                ),
+              );
+            },
+          )
+        ]),
       ),
     );
   }

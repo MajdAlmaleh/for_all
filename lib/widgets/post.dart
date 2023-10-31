@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 // ignore: must_be_immutable
 class Post extends StatefulWidget {
@@ -65,9 +66,28 @@ class _PostState extends State<Post> {
                 radius: 20, backgroundImage: NetworkImage(widget.userImage)),
             title: Text(widget.username),
           ),
-          Text(widget.postText),
+          Text(widget.postText), //  Image.network(widget.postMedia!),
+
           if (widget.postMedia != null && widget.mediaType == 'image')
             Image.network(widget.postMedia!),
+
+          if (widget.postMedia != null && widget.mediaType == 'image')
+            CachedNetworkImage(
+              key: UniqueKey(),
+              imageUrl: widget.postMedia!,
+              imageBuilder: (context, imageProvider) => Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: imageProvider,
+                      fit: BoxFit.cover,
+                      colorFilter: const ColorFilter.mode(
+                          Colors.red, BlendMode.colorBurn)),
+                ),
+              ),
+              placeholder: (context, url) => const CircularProgressIndicator(),
+              errorWidget: (context, url, error) => const Icon(Icons.error),
+            ),
+
           if (widget.postMedia != null && widget.mediaType == 'video')
             Center(
               child: _controller.value.isInitialized
